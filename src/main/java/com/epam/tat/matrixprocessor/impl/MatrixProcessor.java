@@ -2,7 +2,6 @@ package com.epam.tat.matrixprocessor.impl;
 
 import com.epam.tat.matrixprocessor.IMatrixProcessor;
 
-import java.sql.SQLOutput;
 import java.util.Arrays;
 
 /**
@@ -65,9 +64,7 @@ public class MatrixProcessor implements IMatrixProcessor {
 		System.out.println(" ");
 		Arrays.stream(transposeMatrix).map(Arrays::toString).forEach(System.out::println);
 
-
 	return transposeMatrix;
-
 	}
 
 	/**
@@ -116,7 +113,6 @@ public class MatrixProcessor implements IMatrixProcessor {
 
 
 		return turnClockwiseMatrix;
-
 	}
 
 	/**
@@ -199,24 +195,9 @@ public class MatrixProcessor implements IMatrixProcessor {
 	 * @return inverse matrix for input matrix
 	 */
 	@Override
-	public double[][] getInverseMatrix(double[][] matrix) {
-		throw new UnsupportedOperationException("You need to implement this method");
-	}
-
-	/**
-	 * This method returns the determinant of the matrix
-	 *
-	 * See {https://en.wikipedia.org/wiki/Determinant}
-	 *
-	 * @param matrix - input matrix
-	 * @return determinant of input matrix
-	 */
-	@Override
-	public double getMatrixDeterminant(double[][] matrix) {
-		if (matrix.length != matrix.length || matrix[0].length == 0 || matrix.length == 0) {
-			throw new UnsupportedOperationException("Determinant error: wrong demention. " +
-					"Number of columns matrix is " + matrix[0].length + "\n. " +
-					"Number of rows matrix is " + matrix.length +"\n");
+	public double[][] getInverseMatrix(double[][] matrix) throws UnsupportedOperationException {
+		if (matrix.length != matrix[0].length) {
+			throw new UnsupportedOperationException("Error. Wrong dimension. Rows not equals columns\n");
 		}
 
 		if (matrix.length <= 0) {
@@ -235,87 +216,85 @@ public class MatrixProcessor implements IMatrixProcessor {
 			throw new UnsupportedOperationException("Number of columns in matrix >= 10.\n");
 		}
 
-		int[] index = new int[matrix.length];
-		int numberOfValues = 0;
-		double k;
-		double[][] matrixA = new double[matrix.length][matrix[0].length];
-		double[] vectorB = new double[matrix.length];
-		double determinant = 1;
+
+		double[][] inverseMatrix = new double[matrix.length][matrix[0].length];
+
+		double determinant = getMatrixDeterminant(matrix);
+		double minor[][] = getMatrixMinor(matrix);
+
+		return inverseMatrix;
+	}
+
+	/**
+	 * This method returns the determinant of the matrix
+	 *
+	 * See {https://en.wikipedia.org/wiki/Determinant}
+	 *
+	 * @param matrix - input matrix
+	 * @return determinant of input matrix
+	 */
+	@Override
+	public double getMatrixDeterminant(double[][] matrix) throws UnsupportedOperationException {
+
+		if (matrix.length <= 0) {
+			throw new UnsupportedOperationException("Number of rows in matrix <= 0.\n");
+		}
+		if (matrix.length >= 10) {
+			throw new UnsupportedOperationException("Number of rows in matrix >= 10.\n");
+		}
+		if (matrix[0].length <= 0) {
+			throw new UnsupportedOperationException("Number of columns in matrix <= 0.\n");
+		}
+		if (matrix[0].length >= 10) {
+			throw new UnsupportedOperationException("Number of columns in matrix >= 10.\n");
+		}
+		if (matrix.length == 1) {
+			return matrix[0][0];
+		}
+		double determinant = 0;
+
+		double matrixMinor[][] = new double[matrix.length-1][matrix[0].length-1];
+		int signBeforeNumber = 1;
 
 		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
-				matrixA[i][j] = matrix[i][j];
-			}
-		}
-
-		for (int i = 0; i < matrix.length; i++) {
-			index[i] = i;
-		}
-
-		for (int p = 0; p < (matrix.length - 1); p++) {
-			gaussMethod(matrixA, vectorB, matrix.length, p, index, numberOfValues);
-			for (int i = p+1; i < matrix.length; i++) {
-				if (matrixA[p][p] != 0) {
-					k = matrixA[i][p]/matrixA[p][p];
-					for ( int j = p; j < matrix.length; j++) {
-						matrixA[i][j] = matrixA[i][j] - matrixA[p][j] * k;
+			int x = 0, y = 0;
+			for (int j = 1; j < matrix.length; j++) {
+				for(int k = 0; k < matrix.length; k++) {
+					if (i == k) {
+						continue;
+					}
+					matrixMinor[x][y] = matrix[j][k];
+					y++;
+					if (y == (matrix.length - 1)) {
+						y = 0;
+						x++;
 					}
 				}
 			}
+			determinant += signBeforeNumber * matrix[0][i] * getMatrixDeterminant(matrixMinor);
+			signBeforeNumber *= (-1);
 		}
-
-
-		for (int i = 0; i < matrix.length; i++) {
-			determinant *= matrixA[i][i];
-		}
-
-		determinant = Math.pow(numberOfValues, -1) * determinant;
-
 		return determinant;
 	}
+public static double[][] getMatrixMinor(double[][] matrix) {
 
-	private void gaussMethod(double[][] matrixA, double[] vectorB, int length, int p, int[] index, int numberOfValues) {
-		double maxElement;
-		double tempValue;
-		int indexP;
-		int maxElementIndex_i = p;
-		int maxElementIndex_j = p;
+		int n = matrix.length - 1;
+		int m = matrix[0].length - 1;
+		int rowNum = matrix.length;
+		int colNum = matrix[0].length;
 
-		maxElement = Math.abs(matrixA[p][p]);
+		double[][] result = new double[ n ][ m ];
 
-		for (int i = p; i < length; i++) {
-			for (int j = p; j < length; j++) {
-				if (Math.abs(matrixA[i][j]) > maxElement) {
-					maxElement = Math.abs(matrixA[i][j]);
-					maxElementIndex_i = i;
-					maxElementIndex_j = j;
-				}
+		for (int i = 0; i < matrix.length; i++) {
+			boolean isRowDeleted = rowNum < i;
+			int resultRowIndex = isRowDeleted ? i - 1 : i;
+			for (int j = 0; j < matrix[i].length; j++) {
+				boolean isColDeleted = colNum < j;
+				int resultColIndex = isColDeleted ? j - 1 : j;
+				if (rowNum != i && colNum != j)
+					result[resultRowIndex][resultColIndex] = matrix[i][j];
 			}
 		}
-
-		if (maxElementIndex_i != p) {
-			for (int i = 0; i < length; i++) {
-				tempValue = matrixA[p][i];
-				matrixA[p][i] = matrixA[maxElementIndex_i][i];
-				matrixA[maxElementIndex_i][i] = tempValue;
-			}
-
-			tempValue = vectorB[p];
-			vectorB[p] = vectorB[maxElementIndex_i];
-			vectorB[maxElementIndex_i] = tempValue;
-			numberOfValues++;
-		}
-
-		if (maxElementIndex_j != p) {
-			for (int i = 0; i < length; i++) {
-				tempValue = matrixA[i][p];
-				matrixA[i][p] = matrixA[i][maxElementIndex_j];
-				matrixA[i][maxElementIndex_j] = tempValue;
-			}
-			indexP = index[p];
-			index[p] = index[maxElementIndex_j];
-			index[maxElementIndex_j] = indexP;
-			numberOfValues++;
-		}
+		return result;
 	}
 }
