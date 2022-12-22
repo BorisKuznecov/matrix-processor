@@ -20,6 +20,9 @@ import java.util.Arrays;
  */
 public class MatrixProcessor implements IMatrixProcessor {
 
+	public static final int MAX_DIMENSION = 10;
+	public static final int MIN_DIMENSION = 0;
+
 	/**
 	 * Matrix transpose is an operation on a matrix where its rows become columns with the same numbers.
 	 * Ex.:
@@ -32,26 +35,22 @@ public class MatrixProcessor implements IMatrixProcessor {
 	 */
 	@Override
 	public double[][] transpose(double[][] matrix) throws UnsupportedOperationException {
-
-		if (matrix.length <= 0) {
+		if (matrix.length <= MIN_DIMENSION) {
 			throw new UnsupportedOperationException("Number of rows in matrix <= 0.\n");
 		}
-
-		if (matrix.length >= 10) {
+		if (matrix.length >= MAX_DIMENSION) {
 			throw new UnsupportedOperationException("Number of rows in matrix >= 10.\n");
 		}
-
-		if (matrix[0].length <= 0) {
+		if (matrix[0].length <= MIN_DIMENSION) {
 			throw new UnsupportedOperationException("Number of columns in matrix <= 0.\n");
 		}
-
-		if (matrix[0].length >= 10) {
+		if (matrix[0].length >= MAX_DIMENSION) {
 			throw new UnsupportedOperationException("Number of columns in matrix >= 10.\n");
 		}
 
-		final int ROWS = matrix[0].length;
-		final int COLUMNS = matrix.length;
-		double[][] transposeMatrix = new double[ROWS][COLUMNS];
+		final int ROWS_TRANSPOSE_MATRIX = matrix[0].length;
+		final int COLUMNS_TRANSPOSE_MATRIX = matrix.length;
+		double[][] transposeMatrix = new double[ROWS_TRANSPOSE_MATRIX][COLUMNS_TRANSPOSE_MATRIX];
 
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[0].length; j++) {
@@ -79,30 +78,26 @@ public class MatrixProcessor implements IMatrixProcessor {
 	 */
 	@Override
 	public double[][] turnClockwise(double[][] matrix) throws UnsupportedOperationException {
-
-		if (matrix.length <= 0) {
+		if (matrix.length <= MIN_DIMENSION) {
 			throw new UnsupportedOperationException("Number of rows in matrix <= 0.\n");
 		}
-
-		if (matrix.length >= 10) {
+		if (matrix.length >= MAX_DIMENSION) {
 			throw new UnsupportedOperationException("Number of rows in matrix >= 10.\n");
 		}
-
-		if (matrix[0].length <= 0) {
+		if (matrix[0].length <= MIN_DIMENSION) {
 			throw new UnsupportedOperationException("Number of columns in matrix <= 0.\n");
 		}
-
-		if (matrix[0].length >= 10) {
+		if (matrix[0].length >= MAX_DIMENSION) {
 			throw new UnsupportedOperationException("Number of columns in matrix >= 10.\n");
 		}
 
-		final int ROWS = matrix[0].length;
-		final int COLUMNS = matrix.length;
-		double[][] turnClockwiseMatrix = new double[ROWS][COLUMNS];
+		final int ROWS_CLOCKWISE_MATRIX = matrix[0].length;
+		final int COLUMNS_CLOCKWISE_MATRIX = matrix.length;
+		double[][] turnClockwiseMatrix = new double[ROWS_CLOCKWISE_MATRIX][COLUMNS_CLOCKWISE_MATRIX];
 
-		for (int i = 0; i < COLUMNS; i++) {
-			for (int j = 0; j < ROWS; j++) {
-				turnClockwiseMatrix[j][COLUMNS-i-1] = matrix[i][j];
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				turnClockwiseMatrix[j][COLUMNS_CLOCKWISE_MATRIX-i-1] = matrix[i][j];
 			}
 		}
 
@@ -110,7 +105,6 @@ public class MatrixProcessor implements IMatrixProcessor {
 		Arrays.stream(matrix).map(Arrays::toString).forEach(System.out::println);
 		System.out.println(" ");
 		Arrays.stream(turnClockwiseMatrix).map(Arrays::toString).forEach(System.out::println);
-
 
 		return turnClockwiseMatrix;
 	}
@@ -126,42 +120,33 @@ public class MatrixProcessor implements IMatrixProcessor {
 	 */
 	@Override
 	public double[][] multiplyMatrices (double[][] firstMatrix, double[][] secondMatrix) throws UnsupportedOperationException {
-
 		if (firstMatrix[0].length != secondMatrix.length || firstMatrix[0].length == 0 || secondMatrix.length == 0) {
 			throw new UnsupportedOperationException("Multiplying error: wrong demention. " +
 					"Number of columns first matrix is " + firstMatrix[0].length + "\n. " +
 					"Number of rows second matrix is " + secondMatrix.length +"\n");
 		}
-
-		if (firstMatrix.length <= 0) {
+		if (firstMatrix.length <= MIN_DIMENSION) {
 			throw new UnsupportedOperationException("Number of rows in first matrix <= 0.\n");
 		}
-
-		if (firstMatrix.length >= 10) {
+		if (firstMatrix.length >= MAX_DIMENSION) {
 			throw new UnsupportedOperationException("Number of rows in first matrix >= 10.\n");
 		}
-
-		if (firstMatrix[0].length <= 0) {
+		if (firstMatrix[0].length <= MIN_DIMENSION) {
 			throw new UnsupportedOperationException("Number of columns in first matrix <= 0.\n");
 		}
-
-		if (firstMatrix[0].length >= 10) {
+		if (firstMatrix[0].length >= MAX_DIMENSION) {
 			throw new UnsupportedOperationException("Number of columns in first matrix >= 10.\n");
 		}
-
-		if (secondMatrix.length <= 0) {
+		if (secondMatrix.length <= MIN_DIMENSION) {
 			throw new UnsupportedOperationException("Number of rows in second matrix <= 0.\n");
 		}
-
-		if (secondMatrix.length >= 10) {
+		if (secondMatrix.length >= MAX_DIMENSION) {
 			throw new UnsupportedOperationException("Number of rows in second matrix >= 10.\n");
 		}
-
-		if (secondMatrix[0].length <= 0) {
+		if (secondMatrix[0].length <= MIN_DIMENSION) {
 			throw new UnsupportedOperationException("Number of columns in second matrix <= 0.\n");
 		}
-
-		if (secondMatrix[0].length >= 10) {
+		if (secondMatrix[0].length >= MAX_DIMENSION) {
 			throw new UnsupportedOperationException("Number of columns in second matrix >= 10.\n");
 		}
 
@@ -182,7 +167,6 @@ public class MatrixProcessor implements IMatrixProcessor {
 		System.out.println(" ");
 		Arrays.stream(multiplyResultMatrix).map(Arrays::toString).forEach(System.out::println);
 
-
 		return multiplyResultMatrix;
 	}
 
@@ -199,28 +183,51 @@ public class MatrixProcessor implements IMatrixProcessor {
 		if (matrix.length != matrix[0].length) {
 			throw new UnsupportedOperationException("Error. Wrong dimension. Rows not equals columns\n");
 		}
-
-		if (matrix.length <= 0) {
+		if (matrix.length <= MIN_DIMENSION) {
 			throw new UnsupportedOperationException("Number of rows in matrix <= 0.\n");
 		}
-
-		if (matrix.length >= 10) {
+		if (matrix.length >= MAX_DIMENSION) {
 			throw new UnsupportedOperationException("Number of rows in matrix >= 10.\n");
 		}
-
-		if (matrix[0].length <= 0) {
+		if (matrix[0].length <= MIN_DIMENSION) {
 			throw new UnsupportedOperationException("Number of columns in matrix <= 0.\n");
 		}
-
-		if (matrix[0].length >= 10) {
+		if (matrix[0].length >= MAX_DIMENSION) {
 			throw new UnsupportedOperationException("Number of columns in matrix >= 10.\n");
 		}
 
+		double[][] minorMatrix = new double[matrix.length][matrix[0].length];
+		double determinant = getMatrixDeterminant(matrix);
+		double[][] minor = new double[matrix.length-1][matrix[0].length-1];
 
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j=0; j < matrix[0].length; j++) {
+				minor = getMinorMatrix(matrix, i, j);
+				minorMatrix[i][j] = getMatrixDeterminant(minor);
+			}
+		}
+
+		double[][] algAdd = new double[matrix.length][matrix[0].length];
+		int signBeforeNumber = 1;
+
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix.length; j++) {
+				algAdd[i][j] = signBeforeNumber * minorMatrix[i][j];
+			}
+		}
+
+		double[][] algAddTranspose = transpose(algAdd);
 		double[][] inverseMatrix = new double[matrix.length][matrix[0].length];
 
-		double determinant = getMatrixDeterminant(matrix);
-		double minor[][] = getMatrixMinor(matrix);
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix.length; j++) {
+				inverseMatrix[i][j] = 1 / determinant * algAddTranspose[i][j];
+			}
+		}
+
+		System.out.println("InverseMatrix");
+		Arrays.stream(inverseMatrix).map(Arrays::toString).forEach(System.out::println);
+		System.out.println(" ");
 
 		return inverseMatrix;
 	}
@@ -236,21 +243,22 @@ public class MatrixProcessor implements IMatrixProcessor {
 	@Override
 	public double getMatrixDeterminant(double[][] matrix) throws UnsupportedOperationException {
 
-		if (matrix.length <= 0) {
+		if (matrix.length <= MIN_DIMENSION) {
 			throw new UnsupportedOperationException("Number of rows in matrix <= 0.\n");
 		}
-		if (matrix.length >= 10) {
+		if (matrix.length >= MAX_DIMENSION) {
 			throw new UnsupportedOperationException("Number of rows in matrix >= 10.\n");
 		}
-		if (matrix[0].length <= 0) {
+		if (matrix[0].length <= MIN_DIMENSION) {
 			throw new UnsupportedOperationException("Number of columns in matrix <= 0.\n");
 		}
-		if (matrix[0].length >= 10) {
+		if (matrix[0].length >= MAX_DIMENSION) {
 			throw new UnsupportedOperationException("Number of columns in matrix >= 10.\n");
 		}
 		if (matrix.length == 1) {
 			return matrix[0][0];
 		}
+
 		double determinant = 0;
 
 		double matrixMinor[][] = new double[matrix.length-1][matrix[0].length-1];
@@ -274,27 +282,29 @@ public class MatrixProcessor implements IMatrixProcessor {
 			determinant += signBeforeNumber * matrix[0][i] * getMatrixDeterminant(matrixMinor);
 			signBeforeNumber *= (-1);
 		}
+
 		return determinant;
 	}
-public static double[][] getMatrixMinor(double[][] matrix) {
+	public static double[][] getMinorMatrix(double[][] matrix, int rowDeleted, int columnDeleted) {
 
-		int n = matrix.length - 1;
-		int m = matrix[0].length - 1;
-		int rowNum = matrix.length;
-		int colNum = matrix[0].length;
+		final int ROWS_MINOR_MATRIX = matrix.length - 1;
+		final int COLUMNS_MINOR_MATRIX = matrix[0].length - 1;
+		double[][] resultMinorMatrix = new double[ROWS_MINOR_MATRIX][COLUMNS_MINOR_MATRIX];
+		int i, j, x = 0, y = 0;
 
-		double[][] result = new double[ n ][ m ];
-
-		for (int i = 0; i < matrix.length; i++) {
-			boolean isRowDeleted = rowNum < i;
-			int resultRowIndex = isRowDeleted ? i - 1 : i;
-			for (int j = 0; j < matrix[i].length; j++) {
-				boolean isColDeleted = colNum < j;
-				int resultColIndex = isColDeleted ? j - 1 : j;
-				if (rowNum != i && colNum != j)
-					result[resultRowIndex][resultColIndex] = matrix[i][j];
+		for (i = 0; i < matrix.length; i++) {
+			x = 0;
+			for (j = 0; j < matrix[0].length; j++) {
+				if (i != rowDeleted && j != columnDeleted) {
+					resultMinorMatrix[x][y] = matrix[i][j];
+					x++;
+				}
+			}
+			if (i != rowDeleted && j != columnDeleted) {
+				y++;
 			}
 		}
-		return result;
+
+		return resultMinorMatrix;
 	}
 }
