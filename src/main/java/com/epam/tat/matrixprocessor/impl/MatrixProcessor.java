@@ -2,6 +2,8 @@ package com.epam.tat.matrixprocessor.impl;
 
 import com.epam.tat.matrixprocessor.IMatrixProcessor;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 
 /**
@@ -22,7 +24,12 @@ public class MatrixProcessor implements IMatrixProcessor {
 
 	public static final int MAX_DIMENSION = 10;
 	public static final int MIN_DIMENSION = 0;
-
+    public static final int PRECISION = 3;
+    public static final String MESSAGE_ROWS_LESS_THAN_ZERO = "Number of rows in matrix <= 0.\n";
+    public static final String MESSAGE_COLUMNS_LESS_THAN_ZERO = "Number of columns in matrix <= 0.\n";
+    public static final String MESSAGE_ROWS_MORE_THAN_TEN = "Number of rows in matrix >= 10.\n";
+    public static final String MESSAGE_COLUMNS_MORE_THAN_TEN = "Number of columns in matrix >= 10.\n";
+    public static final String MESSAGE_DETERMINANT_OF_NON_SQUARE_MATRIX = "Cannot calculate determinant of non-square matrix!";
 	/**
 	 * Matrix transpose is an operation on a matrix where its rows become columns with the same numbers.
 	 * Ex.:
@@ -36,16 +43,16 @@ public class MatrixProcessor implements IMatrixProcessor {
 	@Override
 	public double[][] transpose(double[][] matrix) throws UnsupportedOperationException {
 		if (matrix.length <= MIN_DIMENSION) {
-			throw new UnsupportedOperationException("Number of rows in matrix <= 0.\n");
+			throw new UnsupportedOperationException(MESSAGE_ROWS_LESS_THAN_ZERO);
 		}
 		if (matrix.length >= MAX_DIMENSION) {
-			throw new UnsupportedOperationException("Number of rows in matrix >= 10.\n");
+			throw new UnsupportedOperationException(MESSAGE_ROWS_MORE_THAN_TEN);
 		}
 		if (matrix[0].length <= MIN_DIMENSION) {
-			throw new UnsupportedOperationException("Number of columns in matrix <= 0.\n");
+			throw new UnsupportedOperationException(MESSAGE_COLUMNS_LESS_THAN_ZERO);
 		}
 		if (matrix[0].length >= MAX_DIMENSION) {
-			throw new UnsupportedOperationException("Number of columns in matrix >= 10.\n");
+			throw new UnsupportedOperationException(MESSAGE_COLUMNS_MORE_THAN_TEN);
 		}
 
 		final int ROWS_TRANSPOSE_MATRIX = matrix[0].length;
@@ -57,11 +64,6 @@ public class MatrixProcessor implements IMatrixProcessor {
 				transposeMatrix[j][i] = matrix[i][j];
 			}
 		}
-
-		System.out.println("transpose");
-		Arrays.stream(matrix).map(Arrays::toString).forEach(System.out::println);
-		System.out.println(" ");
-		Arrays.stream(transposeMatrix).map(Arrays::toString).forEach(System.out::println);
 
 	return transposeMatrix;
 	}
@@ -79,16 +81,16 @@ public class MatrixProcessor implements IMatrixProcessor {
 	@Override
 	public double[][] turnClockwise(double[][] matrix) throws UnsupportedOperationException {
 		if (matrix.length <= MIN_DIMENSION) {
-			throw new UnsupportedOperationException("Number of rows in matrix <= 0.\n");
+			throw new UnsupportedOperationException(MESSAGE_ROWS_LESS_THAN_ZERO);
 		}
 		if (matrix.length >= MAX_DIMENSION) {
-			throw new UnsupportedOperationException("Number of rows in matrix >= 10.\n");
+			throw new UnsupportedOperationException(MESSAGE_ROWS_MORE_THAN_TEN);
 		}
 		if (matrix[0].length <= MIN_DIMENSION) {
-			throw new UnsupportedOperationException("Number of columns in matrix <= 0.\n");
+			throw new UnsupportedOperationException(MESSAGE_COLUMNS_LESS_THAN_ZERO);
 		}
 		if (matrix[0].length >= MAX_DIMENSION) {
-			throw new UnsupportedOperationException("Number of columns in matrix >= 10.\n");
+			throw new UnsupportedOperationException(MESSAGE_COLUMNS_MORE_THAN_TEN);
 		}
 
 		final int ROWS_CLOCKWISE_MATRIX = matrix[0].length;
@@ -100,11 +102,6 @@ public class MatrixProcessor implements IMatrixProcessor {
 				turnClockwiseMatrix[j][COLUMNS_CLOCKWISE_MATRIX-i-1] = matrix[i][j];
 			}
 		}
-
-		System.out.println("turnClockwise");
-		Arrays.stream(matrix).map(Arrays::toString).forEach(System.out::println);
-		System.out.println(" ");
-		Arrays.stream(turnClockwiseMatrix).map(Arrays::toString).forEach(System.out::println);
 
 		return turnClockwiseMatrix;
 	}
@@ -155,17 +152,10 @@ public class MatrixProcessor implements IMatrixProcessor {
 		for (int i = 0; i < multiplyResultMatrix[0].length; i++) {
 			for (int j = 0; j < multiplyResultMatrix.length; j++) {
 				for (int k = 0; k < firstMatrix[0].length; k++) {
-					multiplyResultMatrix[i][j] = multiplyResultMatrix[i][j] + firstMatrix[i][k] * secondMatrix [k][j];
+					multiplyResultMatrix[i][j] = roundValue(multiplyResultMatrix[i][j] + firstMatrix[i][k] * secondMatrix [k][j]);
 				}
 			}
 		}
-
-		System.out.println("multiplyMatrices");
-		Arrays.stream(firstMatrix).map(Arrays::toString).forEach(System.out::println);
-		System.out.println(" ");
-		Arrays.stream(secondMatrix).map(Arrays::toString).forEach(System.out::println);
-		System.out.println(" ");
-		Arrays.stream(multiplyResultMatrix).map(Arrays::toString).forEach(System.out::println);
 
 		return multiplyResultMatrix;
 	}
@@ -184,16 +174,16 @@ public class MatrixProcessor implements IMatrixProcessor {
 			throw new UnsupportedOperationException("Error. Wrong dimension. Rows not equals columns\n");
 		}
 		if (matrix.length <= MIN_DIMENSION) {
-			throw new UnsupportedOperationException("Number of rows in matrix <= 0.\n");
+			throw new UnsupportedOperationException(MESSAGE_ROWS_LESS_THAN_ZERO);
 		}
 		if (matrix.length >= MAX_DIMENSION) {
-			throw new UnsupportedOperationException("Number of rows in matrix >= 10.\n");
+			throw new UnsupportedOperationException(MESSAGE_ROWS_MORE_THAN_TEN);
 		}
 		if (matrix[0].length <= MIN_DIMENSION) {
-			throw new UnsupportedOperationException("Number of columns in matrix <= 0.\n");
+			throw new UnsupportedOperationException(MESSAGE_COLUMNS_LESS_THAN_ZERO);
 		}
 		if (matrix[0].length >= MAX_DIMENSION) {
-			throw new UnsupportedOperationException("Number of columns in matrix >= 10.\n");
+			throw new UnsupportedOperationException(MESSAGE_COLUMNS_MORE_THAN_TEN);
 		}
 
 		double[][] minorMatrix = new double[matrix.length][matrix[0].length];
@@ -213,7 +203,9 @@ public class MatrixProcessor implements IMatrixProcessor {
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix.length; j++) {
 				algAdd[i][j] = signBeforeNumber * minorMatrix[i][j];
+                signBeforeNumber =  signBeforeNumber * -1;
 			}
+            signBeforeNumber =  signBeforeNumber * -1;
 		}
 
 		double[][] algAddTranspose = transpose(algAdd);
@@ -221,7 +213,7 @@ public class MatrixProcessor implements IMatrixProcessor {
 
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix.length; j++) {
-				inverseMatrix[i][j] = 1 / determinant * algAddTranspose[i][j];
+                inverseMatrix[i][j] = roundValue(1 / determinant * algAddTranspose[i][j]);
 			}
 		}
 
@@ -244,28 +236,34 @@ public class MatrixProcessor implements IMatrixProcessor {
 	public double getMatrixDeterminant(double[][] matrix) throws UnsupportedOperationException {
 
 		if (matrix.length <= MIN_DIMENSION) {
-			throw new UnsupportedOperationException("Number of rows in matrix <= 0.\n");
+			throw new UnsupportedOperationException(MESSAGE_ROWS_LESS_THAN_ZERO);
 		}
 		if (matrix.length >= MAX_DIMENSION) {
-			throw new UnsupportedOperationException("Number of rows in matrix >= 10.\n");
+			throw new UnsupportedOperationException(MESSAGE_ROWS_MORE_THAN_TEN);
 		}
 		if (matrix[0].length <= MIN_DIMENSION) {
-			throw new UnsupportedOperationException("Number of columns in matrix <= 0.\n");
+			throw new UnsupportedOperationException(MESSAGE_COLUMNS_LESS_THAN_ZERO);
 		}
 		if (matrix[0].length >= MAX_DIMENSION) {
-			throw new UnsupportedOperationException("Number of columns in matrix >= 10.\n");
+			throw new UnsupportedOperationException(MESSAGE_COLUMNS_MORE_THAN_TEN);
 		}
+        if (matrix[0].length != matrix.length) {
+            throw new UnsupportedOperationException(MESSAGE_DETERMINANT_OF_NON_SQUARE_MATRIX);
+        }
 		if (matrix.length == 1) {
 			return matrix[0][0];
 		}
 
 		double determinant = 0;
 
-		double matrixMinor[][] = new double[matrix.length-1][matrix[0].length-1];
+		double[][] matrixMinor = new double[matrix.length-1][matrix[0].length-1];
 		int signBeforeNumber = 1;
+        int x = 0;
+        int y = 0;
 
 		for (int i = 0; i < matrix.length; i++) {
-			int x = 0, y = 0;
+			x = 0;
+            y = 0;
 			for (int j = 1; j < matrix.length; j++) {
 				for(int k = 0; k < matrix.length; k++) {
 					if (i == k) {
@@ -290,7 +288,10 @@ public class MatrixProcessor implements IMatrixProcessor {
 		final int ROWS_MINOR_MATRIX = matrix.length - 1;
 		final int COLUMNS_MINOR_MATRIX = matrix[0].length - 1;
 		double[][] resultMinorMatrix = new double[ROWS_MINOR_MATRIX][COLUMNS_MINOR_MATRIX];
-		int i, j, x = 0, y = 0;
+		int i;
+        int j;
+        int x = 0;
+        int y = 0;
 
 		for (i = 0; i < matrix.length; i++) {
 			x = 0;
@@ -307,4 +308,11 @@ public class MatrixProcessor implements IMatrixProcessor {
 
 		return resultMinorMatrix;
 	}
+
+    private static double roundValue(double value) {
+        if (PRECISION < 0) throw new IllegalArgumentException();
+        BigDecimal bigDecimal = new BigDecimal(Double.toString(value));
+        bigDecimal = bigDecimal.setScale(PRECISION, RoundingMode.HALF_UP);
+        return bigDecimal.doubleValue();
+    }
 }
